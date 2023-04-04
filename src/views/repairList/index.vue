@@ -32,35 +32,15 @@ moment().format();
 export default {
   data() {
     return {
-      tableData: [],
-      oldData:[],
-      activeName: "second",
-      Data:[]
+      tableData: [], //今天数据
+      oldData:[], //昨天数据
+      activeName: "second"
     };
   },
   methods: {
-    //处理后端返回的时间带t类型转换
-    formatter(row) {
-      console.log(row, "row");
-      const zoneDate = new Date(row).toJSON();
-      const date = new Date(+new Date(zoneDate) + 8 * 3600 * 1000)
-        .toLocaleDateString()
-        .replace(/T/g, " ")
-        .replace(/\.[\d]{3}Z/, "");
-      return date;
-    },
     //tab切换页面
     tabhandleClick(tab, event) {
       console.log(tab, event);
-    },
-    getOldList() {
-      getRepairList().then((res) => {
-        console.log(res);
-        res.data.forEach((item) => {
-          item.zhiBanRi = this.formatter(item.zhiBanRi);
-        });
-        _this.tableData = res.data;
-      });
     },
   },
   //vue的生命周期钩子函数  页面加载时
@@ -69,24 +49,9 @@ export default {
   mounted() {
     var _this = this;
     getRepairList().then((res) => {
-      console.log(res);
-      res.data.forEach((item) => {
-         item.zhiBanRi = moment(item.zhiBanRi).format('YYYY/MM/DD');
-      });
-      //处理好的时间总数据
-      _this.Data = res.data;
-      _this.Data.forEach(item=>{
-        var datatime = moment(new Date()).format("YYYY/MM/DD")
-        console.log(datatime,item.zhiBanRi)
-        if(datatime == item.zhiBanRi){
-          this.tableData.push(item)
-        }else{
-          this.oldData.push(item)
-        }
-      })
-      //处理今天数据给 tableData  昨天的数据给oldData
-      console.log(moment(new Date()).format("YYYY/MM/DD"),'111')
-
+      console.log(res)
+      this.tableData = res.data.today;
+      this.oldData = res.data.yesterday;
     });
   },
 };
