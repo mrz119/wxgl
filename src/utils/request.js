@@ -4,6 +4,7 @@ import store from '@/store'
 import { getToken } from '@/utils/auth'
 
 // create an axios instance 创建一个axios基础配置
+console.log(process.env.VUE_APP_BASE_API,'api')
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url 请求地址
   // withCredentials: true, // send cookies when cross-domain requests
@@ -45,9 +46,10 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
+    console.log(res.state == 200,'shuju')
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 200) {
+    if (res.code !== 200 && res.state !== 200) {
       Message({
         message: res.message || 'Error',
         type: 'error',
