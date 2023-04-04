@@ -1,7 +1,16 @@
 <template>
   <div>
     <el-tabs v-model="activeName" @tab-click="tabhandleClick">
-      <el-tab-pane label="昨日值班" name="first">昨日值班</el-tab-pane>
+      <el-tab-pane label="昨日值班" name="first">
+        <el-table :data="oldData" style="width: 100%">
+          <el-table-column prop="emplName" label="姓名" width="180">
+          </el-table-column>
+          <el-table-column prop="phone" label="手机号码" width="180 ">
+          </el-table-column>
+          <el-table-column prop="bzmc" label="排班"> </el-table-column>
+          <el-table-column prop="zhiBanRi" label="时间"> </el-table-column>
+        </el-table>
+      </el-tab-pane>
       <el-tab-pane label="今日值班" name="second">
         <el-table :data="tableData" style="width: 100%">
           <el-table-column prop="emplName" label="姓名" width="180">
@@ -18,8 +27,8 @@
 
 <script>
 import { getRepairList } from "@/api/repairList";
-// var moment = require('moment');
-// moment().format();
+var moment = require('moment');
+moment().format();
 export default {
   data() {
     return {
@@ -62,13 +71,21 @@ export default {
     getRepairList().then((res) => {
       console.log(res);
       res.data.forEach((item) => {
-        item.zhiBanRi = this.formatter(item.zhiBanRi);
+         item.zhiBanRi = moment(item.zhiBanRi).format('YYYY/MM/DD');
       });
       //处理好的时间总数据
       _this.Data = res.data;
-      _this.tableData = res.data;
+      _this.Data.forEach(item=>{
+        var datatime = moment(new Date()).format("YYYY/MM/DD")
+        console.log(datatime,item.zhiBanRi)
+        if(datatime == item.zhiBanRi){
+          this.tableData.push(item)
+        }else{
+          this.oldData.push(item)
+        }
+      })
       //处理今天数据给 tableData  昨天的数据给oldData
-      console.log(moment().add(new  Date(), 'days').calendar(),'111')
+      console.log(moment(new Date()).format("YYYY/MM/DD"),'111')
 
     });
   },
