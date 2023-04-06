@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, getUserInfo, setUserInfo, removeUserInfo } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import { Message } from 'element-ui'
 
 const getDefaultState = () => {
   return {
@@ -35,11 +36,13 @@ const actions = {
     return new Promise((resolve, reject) => {
       //调用后端登录接口
       login({ username: username.trim(), password: password }).then(response => {
+        console.log(response,'shuju')
         //js es6语法 结构方法
         const { data } = response
-        console.log(data,'xiangying')
+        console.log(data, 'xiangying')
         commit('SET_TOKEN', data.token.token)
         setToken(data.token.token)
+        setUserInfo(JSON.stringify(data.token))
         resolve()
       }).catch(error => {
         reject(error)
@@ -68,17 +71,23 @@ const actions = {
     })
   },
 
-  // user logout
+  // user logout  用户退出
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      // logout(state.token).then(() => {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
+        removeUserInfo()
         resolve()
-      }).catch(error => {
-        reject(error)
-      })
+        Message({
+          message: '退出登录成功!',
+          type: 'success',
+          duration: 5 * 1000
+        })
+      // }).catch(error => {
+      //   reject(error)
+      // })
     })
   },
 
